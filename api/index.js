@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectToMongoDB } from "./config/db.js";
 
@@ -8,6 +9,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+  
+}))
 
 //! Listen To The Port:
 app.listen(PORT, () => {
