@@ -3,15 +3,23 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectToMongoDB } from "./config/db.js";
+import authRoutes from "./routes/auth.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  
-}))
+
+//! Routes:
+app.use("/api/v1/auth", authRoutes);
 
 //! Listen To The Port:
 app.listen(PORT, () => {
