@@ -50,7 +50,7 @@ const App = () => {
     } else {
       setLoading(false);
     }
-  }, [userInfo]);
+  }, [userInfo, setUserInfo]);
 
   //! Check for the loading:
   if (loading) {
