@@ -2,6 +2,9 @@ import { useAppStore } from "@/store";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import ContactsContainer from "./components/ContactsContainer";
+import EmptyChatContainer from "./components/EmptyChatContainer";
+import ChatContainer from "./components/ChatContainer";
 
 const ChatPage = () => {
   const navigate = useNavigate();
@@ -14,7 +17,13 @@ const ChatPage = () => {
       navigate("/profile");
     }
   }, [userInfo, navigate]);
-  return <div>ChatPage</div>;
+  return (
+    <div className="flex h-[100vh] overflow-hidden text-gray-100">
+      <ContactsContainer />
+      <EmptyChatContainer />
+      <ChatContainer />
+    </div>
+  );
 };
 
 export default ChatPage;
