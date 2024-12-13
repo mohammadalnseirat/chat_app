@@ -16,7 +16,6 @@ const upload = multer({ dest: "uploads/profiles/" });
 
 router.post("/sign-up", signUpUser);
 router.post("/sign-in", loginUser);
-router.post("/log-out", logOutUser);
 router.get("/get-user-info", verifyToken, getUserInfoData);
 router.post("/update-profile", verifyToken, updateProfile);
 router.post(
@@ -25,6 +24,7 @@ router.post(
   upload.single("profile-image"),
   uploadProfileImage
 );
+router.post("/log-out", logOutUser);
 router.delete("/remove-profile-image", verifyToken, deleteProfileImage);
 
 export default router;

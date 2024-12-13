@@ -35,11 +35,11 @@ const App = () => {
         if (response.status === 200 && response.data._id) {
           setUserInfo(response.data);
         } else {
-          setUserInfo(undefined);
+          setUserInfo(null);
         }
       } catch (error) {
         console.log("Error getting user data", { error });
-        setUserInfo(undefined);
+        setUserInfo(null);
       } finally {
         setLoading(false);
       }

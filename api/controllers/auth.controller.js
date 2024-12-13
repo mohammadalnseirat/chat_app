@@ -92,7 +92,7 @@ export const loginUser = async (req, res, next) => {
 //! 3-Function LogOut:
 export const logOutUser = async (req, res, next) => {
   try {
-    res.clearCookie("jwt-token");
+    res.clearCookie("jwt_token");
     res.status(200).json({
       message: "User logged out successfully.",
     });
