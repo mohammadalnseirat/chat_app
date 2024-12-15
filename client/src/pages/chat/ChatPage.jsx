@@ -8,7 +8,7 @@ import ChatContainer from "./components/ChatContainer";
 
 const ChatPage = () => {
   const navigate = useNavigate();
-  const { userInfo } = useAppStore();
+  const { userInfo, selectChatType } = useAppStore();
 
   //? useEffect for side effect:
   useEffect(() => {
@@ -20,8 +20,12 @@ const ChatPage = () => {
   return (
     <div className="flex h-[100vh] overflow-hidden text-gray-100">
       <ContactsContainer />
-      {/* <EmptyChatContainer /> */}
-      <ChatContainer />
+
+      {selectChatType === undefined ? (
+        <EmptyChatContainer />
+      ) : (
+        <ChatContainer />
+      )}
     </div>
   );
 };

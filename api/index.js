@@ -4,6 +4,8 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectToMongoDB } from "./config/db.js";
 import authRoutes from "./routes/auth.route.js";
+import messageRoutes from "./routes/message.route.js";
+import contactRoutes from "./routes/contact.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +23,8 @@ app.use(cookieParser());
 
 //! Routes:
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/messages", messageRoutes);
+app.use("/api/v1/contacts", contactRoutes);
 
 //! Listen To The Port:
 app.listen(PORT, () => {

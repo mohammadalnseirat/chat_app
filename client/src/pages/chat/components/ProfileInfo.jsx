@@ -45,7 +45,7 @@ const ProfileInfo = () => {
   };
   return (
     <div className="absolute bottom-0 h-16 flex items-center justify-between px-4 w-full bg-gray-900 border-t-2 border-purple-500">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 w-full">
         <div className="w-10 h-10 relative">
           <Avatar className="w-10 h-10  rounded-full overflow-hidden">
             {userInfo.image ? (
@@ -72,7 +72,7 @@ const ProfileInfo = () => {
             ? `${userInfo.firstName} ${userInfo.lastName}`
             : `${userInfo.email}`}
         </div>
-        <div className="flex  justify-end gap-2">
+        <div className="flex flex-1 items-center justify-end  gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger onClick={() => navigate("/profile")}>
