@@ -6,6 +6,7 @@ import { connectToMongoDB } from "./config/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import contactRoutes from "./routes/contact.route.js";
+import { setupSocket } from "./socket.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -27,11 +28,12 @@ app.use("/api/v1/messages", messageRoutes);
 app.use("/api/v1/contacts", contactRoutes);
 
 //! Listen To The Port:
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   connectToMongoDB();
   console.log(`Server is running on port ${PORT}`);
 });
 
+setupSocket(server);
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
