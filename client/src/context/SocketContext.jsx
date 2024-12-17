@@ -27,6 +27,22 @@ export const SocketProvider = ({ children }) => {
         console.log("Connected to the socket server");
       });
 
+      //? receive message:
+      const handleReceiveMessage = (message) => {
+        const { selectChatType, selectChatData, addMessages } =
+          useAppStore.getState();
+        if (
+          selectChatType !== undefined &&
+          (selectChatData._id === message.sender._id ||
+            selectChatData._id === message.recipient._id)
+        ) {
+          // console.log("Received message:", message);
+          addMessages(message);
+        }
+      };
+
+      socket.current.on("receiveMessage", handleReceiveMessage);
+
       // ? Disconnect from the socket server when the component is unmounted:
       return () => {
         socket.current.disconnect();

@@ -12,3 +12,6 @@ export const REMOVE_PROFILE_IMAGE_ROUTE = `${AUTH_ROUTE}/remove-profile-image`;
 
 export const CONTACTS_ROUTE = "api/v1/contacts";
 export const SEARCH_CONTACTS_ROUTE = `${CONTACTS_ROUTE}/search-contacts`;
+
+export const MESSAGE_ROUTE = "api/v1/messages";
+export const GET_ALL_MESSAGES_ROUTE = `${MESSAGE_ROUTE}/get-all-messages`;

@@ -105,7 +105,7 @@ const NewDm = () => {
                           <AvatarImage
                             src={`${HOST_URL}/${contact.image}`}
                             alt={contact.email}
-                            className="object-cover w-full h-full bg-black"
+                            className="object-cover w-full h-full bg-black rounded-full"
                           />
                         ) : (
                           <div

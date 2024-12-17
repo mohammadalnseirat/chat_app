@@ -1,4 +1,5 @@
 import { Server as socketServer } from "socket.io";
+import Message from "./models/message.model.js";
 
 export const setupSocket = (server) => {
   const io = new socketServer(server, {
@@ -21,6 +22,28 @@ export const setupSocket = (server) => {
     }
   };
 
+  //! Function to send message:
+  const sendMessage = async (message) => {
+    const senderSocketId = userSocketMap.get(message.sender); // get the sender id from the message.
+    const recipientSocketId = userSocketMap.get(message.recipient); // get the recipient id from the message.
+    // create a new message to send:
+    const createdMessage = await Message.create(message);
+
+    //? send detailed message:
+    const messageData = await Message.findById(createdMessage._id)
+      .populate("sender", "_id email firstName lastName image color")
+      .populate("recipient", "_id email firstName lastName image color");
+
+    // ? send detailed message to recipient and sender:
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit("receiveMessage", messageData); // emit the message to the recipient socket id. //!io.to(recipientSocketId).emit("message", messageData);
+    }
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("receiveMessage", messageData); // emit the message to the sender socket id.
+    }
+  };
+
+  //! connection to the socket server:
   io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
     if (userId) {
@@ -29,7 +52,8 @@ export const setupSocket = (server) => {
     } else {
       console.log("No userId found in the connection");
     }
-
+    //?event to send message:
+    socket.on("sendMessage", sendMessage);
     //? disconnect:
     socket.on("disconnect", () => disconnect(socket));
   });

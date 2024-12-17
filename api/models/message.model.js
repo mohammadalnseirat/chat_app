@@ -28,7 +28,7 @@ const messageSchema = new mongoose.Schema({
       return this.messageType === "file";
     },
   },
-  timestamps: {
+  timestamp: {
     type: Date,
     default: Date.now,
   },
