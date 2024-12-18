@@ -1,12 +1,13 @@
 import { useAppStore } from "@/store";
 import NewDm from "./NewDm";
 import ProfileInfo from "./ProfileInfo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/api-client";
 import { GET_CONTACTS_DM_ROUTE } from "@/utils/constants";
 import ContactList from "@/components/ContactList";
 
 const ContactsContainer = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const { setDirectMessagesContacts, directMessagesContacts } = useAppStore();
   //? useEffect to get All Contacts from the database:
   useEffect(() => {
@@ -33,9 +34,12 @@ const ContactsContainer = () => {
         <Logo />
       </div>
       <div className="my-5">
-        <div className="flex items-center justify-between pr-10">
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-between pr-10"
+        >
           <Title text="Direct Messages" />
-          <NewDm />
+          <NewDm isOpen={isOpen} setIsOpen={setIsOpen} />
         </div>
         <div className="max-h-[38vh] overflow-y-auto scrollbar-hidden">
           <ContactList contacts={directMessagesContacts} />

@@ -18,7 +18,8 @@ app.use(
     credentials: true,
   })
 );
-app.use("/uploads/profiles", express.static("uploads/profiles")); //! Express Static For Multer
+app.use("/uploads/profiles", express.static("uploads/profiles")); //! Express Static For Multer For Profile
+app.use("/uploads/files", express.static("uploads/files")); //! Express Static For Multer For Files
 app.use(express.json());
 app.use(cookieParser());
 

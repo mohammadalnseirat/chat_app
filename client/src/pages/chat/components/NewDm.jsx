@@ -23,7 +23,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useAppStore } from "@/store";
 
-const NewDm = () => {
+const NewDm = ({ isOpen, setIsOpen }) => {
   const { setSelectChatData, setSelectChatType } = useAppStore();
   const [openContactModel, setOpenContactModel] = useState(false);
   const [searchedContacts, setSearchedContacts] = useState([]);
@@ -72,7 +72,10 @@ const NewDm = () => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <Dialog open={openContactModel} onOpenChange={setOpenContactModel}>
+      <Dialog
+        open={openContactModel || isOpen}
+        onOpenChange={setOpenContactModel || setIsOpen}
+      >
         <DialogContent className=" w-[300px] md:w-[400px] md:h-[400px] flex flex-col border-purple-800 text-gray-100 bg-[#1c1d25] ">
           <DialogHeader>
             <DialogTitle className="text-center  text-purple-500 font-semibold">

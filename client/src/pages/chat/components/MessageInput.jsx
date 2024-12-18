@@ -1,16 +1,20 @@
 import { useSocketContext } from "@/context/SocketContext";
+import { axiosInstance } from "@/lib/api-client";
 import { useAppStore } from "@/store";
+import { UPLOAD_FILE_ROUTE } from "@/utils/constants";
 import EmojiPicker from "emoji-picker-react";
 import { Loader } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { GrAttachment } from "react-icons/gr";
 import { IoSend } from "react-icons/io5";
 import { RiEmojiStickerLine } from "react-icons/ri";
+import { toast } from "sonner";
 
 const MessageInput = () => {
   const { selectChatType, userInfo, selectChatData } = useAppStore();
   const socket = useSocketContext();
   const emojeRef = useRef();
+  const fileInputRef = useRef();
   const [message, setMessage] = useState("");
   const [emojePickerOpen, setEmojePickerOpen] = useState(false);
   const isLoading = false;
@@ -50,6 +54,41 @@ const MessageInput = () => {
       setMessage("");
     }
   };
+
+  //? handleAttachmentFile:
+  const handleAttachmentFileClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // ? handleFileAttachmentChange:
+  const handleFileAttachmentChange = async (e) => {
+    try {
+      const file = e.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await axiosInstance.post(UPLOAD_FILE_ROUTE, formData, {
+          withCredentials: true,
+        });
+        if (response.status === 200 && response.data.filePath) {
+          if (selectChatType === "contact") {
+            //? emit the event send message:
+            socket.emit("sendMessage", {
+              sender: userInfo._id,
+              content: undefined,
+              recipient: selectChatData._id,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
   return (
     <div className="h-[10vh] flex items-center justify-center bg-[#1c1d25] px-8 mb-5 gap-2">
       <div className="flex flex-1 rounded-md items-center gap-4 bg-[#2a2b33] border border-green-600 pr-5">
@@ -60,9 +99,18 @@ const MessageInput = () => {
           placeholder="Type your message here..."
           className="flex-1 bg-transparent rounded-md p-5 focus:border-none focus:outline-none"
         />
-        <button className="text-green-600 focus:border-none  focus:outline-none transition-all duration-300 ">
+        <button
+          onClick={handleAttachmentFileClick}
+          className="text-green-600 focus:border-none  focus:outline-none transition-all duration-300 "
+        >
           <GrAttachment className="text-[24px]" />
         </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          hidden
+          onChange={handleFileAttachmentChange}
+        />
         <div className="realtive">
           <button
             onClick={() => setEmojePickerOpen(!emojePickerOpen)}
