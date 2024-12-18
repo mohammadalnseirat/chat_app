@@ -1,5 +1,7 @@
 import { errorHandler } from "../utils/error.js";
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
+import Message from "../models/message.model.js";
 
 //! 1-Function To Search Contacts:
 export const searchContacts = async (req, res, next) => {
@@ -31,6 +33,74 @@ export const searchContacts = async (req, res, next) => {
     } else {
       res.status(200).json({ contacts });
     }
+  } catch (error) {
+    console.log("Error getting all contacts", error.message);
+    next(error);
+  }
+};
+
+//! 2-Function To Get All Contacts:
+export const getAllContactsForDmList = async (req, res, next) => {
+  try {
+    let { userId } = req;
+    userId = new mongoose.Types.ObjectId(userId);
+    //? Get all contacts from the message model:
+    const contacts = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: userId }, { recipient: userId }],
+        },
+      },
+      {
+        $sort: {
+          timestamp: -1,
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: {
+              if: { $eq: ["$sender", userId] },
+              then: "$recipient",
+              else: "$sender",
+            },
+          },
+          lastMessageTime: {
+            $first: "$timestamp",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "contactInfo",
+        },
+      },
+      {
+        $unwind: "$contactInfo",
+      },
+      {
+        $project: {
+          _id: 1,
+          lastMessageTime: 1,
+          email: "$contactInfo.email",
+          firstName: "$contactInfo.firstName",
+          lastName: "$contactInfo.lastName",
+          image: "$contactInfo.image",
+          color: "$contactInfo.color",
+        },
+      },
+      {
+        $sort: {
+          lastMessageTime: -1,
+        },
+      },
+    ]);
+
+    //? send the response back to the client:
+    res.status(200).json({ contacts });
   } catch (error) {
     console.log("Error getting all contacts", error.message);
     next(error);
