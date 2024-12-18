@@ -2,9 +2,9 @@ import { axiosInstance } from "@/lib/api-client";
 import { useAppStore } from "@/store";
 import { GET_ALL_MESSAGES_ROUTE, HOST_URL } from "@/utils/constants";
 import moment from "moment";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { MdFolderZip } from "react-icons/md";
-import { IoArrowDownCircleSharp } from "react-icons/io5";
+import { IoArrowDownCircleSharp, IoCloseSharp } from "react-icons/io5";
 
 const MessageContainer = () => {
   const scrollRef = useRef();
@@ -14,6 +14,8 @@ const MessageContainer = () => {
     selectedChatMessages,
     setSelectedChatMessages,
   } = useAppStore();
+  const [showImage, setShowImage] = useState(false);
+  const [imageURL, setImageURL] = useState(null);
 
   //! useEffect To Get All Messages:
   useEffect(() => {
@@ -116,7 +118,13 @@ const MessageContainer = () => {
             } border p-4 my-1 rounded inline-block max-w-[50%] break-words`}
           >
             {checkFileImage(message.fileUrl) ? (
-              <div className="cursor-pointer">
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowImage(true);
+                  setImageURL(message.fileUrl);
+                }}
+              >
                 <img
                   src={`${HOST_URL}/${message.fileUrl}`}
                   alt="image-file"
@@ -152,6 +160,34 @@ const MessageContainer = () => {
     <div className="overflow-y-auto  flex-1 scrollbar-hidden p-4 px-8 w-full md:w-[65vw] lg:w-[70vw] xl:w-[80vw]">
       {renderMessages()}
       <div ref={scrollRef} />
+      {showImage && (
+        <div className="fixed top-0 left-0 w-[100vw] h-[100vh] flex items-center justify-center z-[1000] backdrop-blur-xl">
+          <div className="mt-10">
+            <img
+              src={`${HOST_URL}/${imageURL}`}
+              alt="image-Url"
+              className="w-full h-[80vh] bg-cover "
+            />
+          </div>
+          <div className="flex gap-5 fixed top-0 mt-5">
+            <button
+              onClick={() => {
+                setShowImage(false);
+                setImageURL(null);
+              }}
+              className="text-3xl group text-red-500 p-2 bg-gray-900 rounded-full"
+            >
+              <IoCloseSharp className="group-hover:animate-spin" />
+            </button>
+            <button
+              onClick={() => downloadFile(imageURL)}
+              className="text-2xl text-gray-50 p-2 bg-gray-900 rounded-full  transition-all duration-300 cursor-pointer group"
+            >
+              <IoArrowDownCircleSharp className="group-hover:animate-bounce group-hover:text-red-600" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
