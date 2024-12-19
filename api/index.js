@@ -6,6 +6,7 @@ import { connectToMongoDB } from "./config/db.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
 import contactRoutes from "./routes/contact.route.js";
+import channelRoutes from "./routes/channel.route.js";
 import { setupSocket } from "./socket.js";
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use(cookieParser());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/messages", messageRoutes);
 app.use("/api/v1/contacts", contactRoutes);
+app.use("/api/v1/channels", channelRoutes);
 
 //! Listen To The Port:
 const server = app.listen(PORT, () => {

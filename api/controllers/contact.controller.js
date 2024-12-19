@@ -106,3 +106,24 @@ export const getAllContactsForDmList = async (req, res, next) => {
     next(error);
   }
 };
+
+//! 3-Function To Get All Contacts:
+export const getAllContacts = async (req, res, next) => {
+  try {
+    const users = await User.find(
+      { _id: { $ne: req.userId } },
+      "firstName lastName _id email"
+    );
+
+    //? Add Label to Contact:
+    const contacts = users.map((user) => ({
+      label: user.firstName ? `${user.firstName} ${user.lastName}` : user.email,
+      value: user._id,
+    }));
+
+    res.status(200).json({ contacts });
+  } catch (error) {
+    console.log("Error getting all contacts", error.message);
+    next(error);
+  }
+};
