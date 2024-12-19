@@ -13,6 +13,8 @@ const MessageContainer = () => {
     selectChatType,
     selectedChatMessages,
     setSelectedChatMessages,
+    setFileDownloadProgress,
+    setIsDownLoading,
   } = useAppStore();
   const [showImage, setShowImage] = useState(false);
   const [imageURL, setImageURL] = useState(null);
@@ -78,8 +80,15 @@ const MessageContainer = () => {
 
   //! Function To DownLoad File:
   const downloadFile = async (url) => {
+    setIsDownLoading(true);
+    setFileDownloadProgress(0);
     const response = await axiosInstance.get(`${HOST_URL}/${url}`, {
       responseType: "blob",
+      onDownloadProgress: (ProgressEvent) => {
+        const { loaded, total } = ProgressEvent;
+        const percentageCompleted = Math.round((loaded * 100) / total);
+        setFileDownloadProgress(percentageCompleted);
+      },
     });
     const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
@@ -89,6 +98,8 @@ const MessageContainer = () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(urlBlob);
+    setIsDownLoading(false);
+    setFileDownloadProgress(0);
   };
 
   const renderDmMessage = (message) => {
@@ -161,7 +172,7 @@ const MessageContainer = () => {
       {renderMessages()}
       <div ref={scrollRef} />
       {showImage && (
-        <div className="fixed top-0 left-0 w-[100vw] h-[100vh] flex items-center justify-center z-[1000] backdrop-blur-xl">
+        <div className="fixed top-0 left-0 w-[100vw] h-[100vh] flex items-center justify-center z-10 backdrop-blur-xl">
           <div className="mt-10">
             <img
               src={`${HOST_URL}/${imageURL}`}

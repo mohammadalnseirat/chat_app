@@ -11,7 +11,13 @@ import { RiEmojiStickerLine } from "react-icons/ri";
 import { toast } from "sonner";
 
 const MessageInput = () => {
-  const { selectChatType, userInfo, selectChatData } = useAppStore();
+  const {
+    selectChatType,
+    userInfo,
+    selectChatData,
+    setIsUploading,
+    setFileUploadProgress,
+  } = useAppStore();
   const socket = useSocketContext();
   const emojeRef = useRef();
   const fileInputRef = useRef();
@@ -69,10 +75,19 @@ const MessageInput = () => {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
+        setIsUploading(true);
+        setFileUploadProgress(0);
         const response = await axiosInstance.post(UPLOAD_FILE_ROUTE, formData, {
           withCredentials: true,
+          onUploadProgress: (data) => {
+            // const { loaded, total } = data;
+            setFileUploadProgress(Math.round((100 * data.loaded) / data.total));
+          },
         });
         if (response.status === 200 && response.data.filePath) {
+          setIsUploading(false);
+          setFileUploadProgress(0);
+          toast.success("File uploaded successfully.");
           if (selectChatType === "contact") {
             //? emit the event send message:
             socket.emit("sendMessage", {
@@ -86,6 +101,8 @@ const MessageInput = () => {
         }
       }
     } catch (error) {
+      setIsUploading(false);
+      setFileUploadProgress(0);
       toast.error(error.response.data.message);
     }
   };
