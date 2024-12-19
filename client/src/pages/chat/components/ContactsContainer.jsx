@@ -3,14 +3,22 @@ import NewDm from "./NewDm";
 import ProfileInfo from "./ProfileInfo";
 import { useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/api-client";
-import { GET_CONTACTS_DM_ROUTE } from "@/utils/constants";
+import {
+  GET_CONTACTS_DM_ROUTE,
+  GET_USERS_CHANNEL_ROUTE,
+} from "@/utils/constants";
 import ContactList from "@/components/ContactList";
 import CreateChannel from "./CreateChannel";
 
 const ContactsContainer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isChannelOpen, setIsChannelOpen] = useState(false);
-  const { setDirectMessagesContacts, directMessagesContacts } = useAppStore();
+  const {
+    setDirectMessagesContacts,
+    directMessagesContacts,
+    channels,
+    setChannels,
+  } = useAppStore();
   //? useEffect to get All Contacts from the database:
   useEffect(() => {
     const getAllContacts = async () => {
@@ -29,7 +37,23 @@ const ContactsContainer = () => {
     };
 
     getAllContacts();
-  }, [setDirectMessagesContacts]);
+  }, [setDirectMessagesContacts, setChannels]);
+  useEffect(() => {
+    const getAllChannels = async () => {
+      try {
+        const response = await axiosInstance.get(GET_USERS_CHANNEL_ROUTE, {
+          withCredentials: true,
+        });
+        if (response.status === 200 && response.data.channels) {
+          setChannels(response.data.channels);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAllChannels();
+  }, [setChannels]);
   return (
     <div className="relative w-full md:w-[35vw] lg:w-[30vw] xl:w-[20vw] bg-[#1b1c24] border-r-2 border-r-purple-500">
       <div className="pt-3">
@@ -57,6 +81,9 @@ const ContactsContainer = () => {
             isChannelOpen={isChannelOpen}
             setIsChannelOpen={setIsChannelOpen}
           />
+        </div>
+        <div className="max-h-[38vh] overflow-y-auto scrollbar-hidden">
+          <ContactList contacts={channels} isChannel={true} />
         </div>
       </div>
       <ProfileInfo />

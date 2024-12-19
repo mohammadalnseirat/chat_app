@@ -10,32 +10,46 @@ const MessageHeader = () => {
       <div className="flex gap-5 items-center justify-between w-full">
         <div className="flex items-center justify-center gap-3">
           <div className="w-12 h-12 relative">
-            <Avatar className="w-12 h-12  rounded-full overflow-hidden">
-              {selectChatData.image ? (
-                <AvatarImage
-                  src={`${HOST_URL}/${selectChatData.image}`}
-                  alt={selectChatData.email}
-                  className="object-cover w-full h-full bg-black"
-                />
+            {
+              //? if selectChatType is contact and selectChatData has image then show image else show first letter
+              selectChatType === "contact" ? (
+                <Avatar className="w-12 h-12  rounded-full overflow-hidden">
+                  {selectChatData.image ? (
+                    <AvatarImage
+                      src={`${HOST_URL}/${selectChatData.image}`}
+                      alt={selectChatData.email}
+                      className="object-cover w-full h-full bg-black"
+                    />
+                  ) : (
+                    <div
+                      className={`uppercase h-12 w-12  text-md border-[1px] flex items-center justify-center rounded-full ${getColor(
+                        selectChatData.color
+                      )}`}
+                    >
+                      {selectChatData.firstName
+                        ? selectChatData.firstName.split("").shift()
+                        : selectChatData.email.split("").shift()}
+                    </div>
+                  )}
+                </Avatar>
               ) : (
                 <div
-                  className={`uppercase h-12 w-12  text-md border-[1px] flex items-center justify-center rounded-full ${getColor(
-                    selectChatData.color
-                  )}`}
+                  className={`size-10 rounded-full flex items-center justify-center bg-gray-800`}
                 >
-                  {selectChatData.firstName
-                    ? selectChatData.firstName.split("").shift()
-                    : selectChatData.email.split("").shift()}
+                  #
                 </div>
-              )}
-            </Avatar>
+              )
+            }
           </div>
           <div>
-            {selectChatType === "contact" &&
-            selectChatData.firstName &&
-            selectChatData.lastName
-              ? `${selectChatData.firstName} ${selectChatData.lastName}`
-              : `${selectChatData.email}`}
+            {selectChatType === "channel" && <p>{selectChatData.name}</p>}
+            {selectChatType === "contact" && (
+              <p>
+                {selectChatData.firstName && selectChatData.lastName
+                  ? `${selectChatData.firstName} ${selectChatData.lastName}`
+                  : `${selectChatData.email}`}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center justify-center gap-5">

@@ -7,7 +7,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
   const {
     selectChatData,
     setSelectChatData,
-    // selectChatType,
+    selectChatType,
     setSelectChatType,
     setSelectedChatMessages,
   } = useAppStore();
@@ -16,6 +16,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
   const handleClickToSelectChat = (contact) => {
     if (isChannel) {
       setSelectChatType("channel");
+      setSelectChatData(contact);
     } else {
       setSelectChatType("contact");
       setSelectChatData(contact);
@@ -32,7 +33,9 @@ const ContactList = ({ contacts, isChannel = false }) => {
           key={contact._id}
           className={`cursor-pointer px-5 mx-2  rounded-md py-2 text-teal-50 transition-all duration-300 ${
             selectChatData && selectChatData._id === contact._id
-              ? `${getColor(contact.color)} border-none`
+              ? selectChatType === "contact"
+                ? `${getColor(contact.color)} border-none`
+                : "bg-gray-800"
               : "hover:bg-gray-800"
           }`}
           onClick={() => handleClickToSelectChat(contact)}
@@ -59,19 +62,19 @@ const ContactList = ({ contacts, isChannel = false }) => {
                     </div>
                   )}
                 </Avatar>
-                {isChannel && (
-                  <div className="size-10 rounded-full flex items-center justify-center bg-gray-900">
-                    #
-                  </div>
-                )}
-                {isChannel ? (
-                  <span>{contact.name}</span>
-                ) : (
-                  <span>
-                    {contact.firstName} {contact.lastName}
-                  </span>
-                )}
               </>
+            )}
+            {isChannel && (
+              <div className="size-10 rounded-full flex items-center justify-center bg-gray-900">
+                #
+              </div>
+            )}
+            {isChannel ? (
+              <span>{contact.name}</span>
+            ) : (
+              <span>
+                {contact.firstName} {contact.lastName}
+              </span>
             )}
           </div>
         </div>
