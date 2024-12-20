@@ -25,7 +25,6 @@ const ContactList = ({ contacts, isChannel = false }) => {
       setSelectedChatMessages([]);
     }
   };
-  console.log(contacts);
   return (
     <div className="mt-5">
       {contacts.map((contact) => (
@@ -73,7 +72,9 @@ const ContactList = ({ contacts, isChannel = false }) => {
               <span>{contact.name}</span>
             ) : (
               <span>
-                {contact.firstName} {contact.lastName}
+                {contact.firstName
+                  ? `${contact.firstName} ${contact.lastName}`
+                  : contact.email}
               </span>
             )}
           </div>

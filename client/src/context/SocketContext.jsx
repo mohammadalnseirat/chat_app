@@ -27,10 +27,14 @@ export const SocketProvider = ({ children }) => {
         console.log("Connected to the socket server");
       });
 
-      //? receive message:
+      //! Function called to receive message event:
       const handleReceiveMessage = (message) => {
-        const { selectChatType, selectChatData, addMessages } =
-          useAppStore.getState();
+        const {
+          selectChatType,
+          selectChatData,
+          addMessages,
+          addContactsInContactList,
+        } = useAppStore.getState();
         if (
           selectChatType !== undefined &&
           (selectChatData._id === message.sender._id ||
@@ -39,22 +43,27 @@ export const SocketProvider = ({ children }) => {
           // console.log("Received message:", message);
           addMessages(message);
         }
+        addContactsInContactList(message);
       };
 
+      // ! Function called to  Receive Channel Message event:
       const handleReceiveChannelMessage = (message) => {
-        const { selectChatType, selectChatData, addMessages } =
-          useAppStore.getState();
+        const {
+          selectChatType,
+          selectChatData,
+          addMessages,
+          addChannelInChannelList,
+        } = useAppStore.getState();
         if (
           selectChatType !== undefined &&
           selectChatData._id === message.channelId
         ) {
           addMessages(message);
         }
+        addChannelInChannelList(message);
       };
-
       socket.current.on("receiveMessage", handleReceiveMessage);
       socket.current.on("receive-channel-message", handleReceiveChannelMessage);
-
       // ? Disconnect from the socket server when the component is unmounted:
       return () => {
         socket.current.disconnect();

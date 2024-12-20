@@ -1,7 +1,7 @@
 import { useAppStore } from "@/store";
 import NewDm from "./NewDm";
 import ProfileInfo from "./ProfileInfo";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { axiosInstance } from "@/lib/api-client";
 import {
   GET_CONTACTS_DM_ROUTE,
@@ -11,8 +11,6 @@ import ContactList from "@/components/ContactList";
 import CreateChannel from "./CreateChannel";
 
 const ContactsContainer = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isChannelOpen, setIsChannelOpen] = useState(false);
   const {
     setDirectMessagesContacts,
     directMessagesContacts,
@@ -60,27 +58,18 @@ const ContactsContainer = () => {
         <Logo />
       </div>
       <div className="my-5">
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between pr-10"
-        >
+        <div className="flex items-center justify-between pr-10">
           <Title text="Direct Messages" />
-          <NewDm isOpen={isOpen} setIsOpen={setIsOpen} />
+          <NewDm />
         </div>
         <div className="max-h-[38vh] overflow-y-auto scrollbar-hidden">
           <ContactList contacts={directMessagesContacts} />
         </div>
       </div>
       <div className="my-5">
-        <div
-          onClick={() => setIsChannelOpen(!isChannelOpen)}
-          className="flex items-center justify-between pr-10"
-        >
+        <div className="flex items-center justify-between pr-10">
           <Title text="Channels" />
-          <CreateChannel
-            isChannelOpen={isChannelOpen}
-            setIsChannelOpen={setIsChannelOpen}
-          />
+          <CreateChannel />
         </div>
         <div className="max-h-[38vh] overflow-y-auto scrollbar-hidden">
           <ContactList contacts={channels} isChannel={true} />

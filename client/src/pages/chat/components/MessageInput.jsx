@@ -87,7 +87,6 @@ const MessageInput = () => {
         const response = await axiosInstance.post(UPLOAD_FILE_ROUTE, formData, {
           withCredentials: true,
           onUploadProgress: (data) => {
-            // const { loaded, total } = data;
             setFileUploadProgress(Math.round((100 * data.loaded) / data.total));
           },
         });

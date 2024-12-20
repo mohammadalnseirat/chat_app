@@ -213,7 +213,7 @@ const MessageContainer = () => {
               message.sender._id === userInfo._id
                 ? "bg-green-500 text-gray-50  border-green-700"
                 : "bg-cyan-800 text-gray-50  border-gray-700"
-            } border p-4 my-1 ml-9 rounded inline-block max-w-[50%] break-words`}
+            } border p-4 my-1 ml-7 rounded inline-block max-w-[50%] break-words`}
           >
             {message.content}
           </div>
@@ -261,7 +261,7 @@ const MessageContainer = () => {
         )}
         {message.sender._id !== userInfo._id ? (
           <div className="flex items-center justify-start gap-3">
-            <Avatar className="w-8 h-8 overflow-hidden rounded-full">
+            <Avatar className="w-6 h-6 overflow-hidden rounded-full">
               {message.sender.image && (
                 <AvatarImage
                   src={`${HOST_URL}/${message.sender.image}`}
@@ -270,7 +270,7 @@ const MessageContainer = () => {
                 />
               )}
               <AvatarFallback
-                className={`uppercase w-8 h-8 flex items-center justify-center rounded-full text-lg ${getColor(
+                className={`uppercase w-6 h-6 flex items-center justify-center rounded-full text-md ${getColor(
                   message.sender.color
                 )}`}
               >
