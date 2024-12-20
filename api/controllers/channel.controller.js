@@ -70,3 +70,27 @@ export const getAllUsersChannel = async (req, res, next) => {
     next(error);
   }
 };
+
+//! 3-Function To Get Channel Messages:
+export const getChannelMessages = async (req, res, next) => {
+  try {
+    const { channelId } = req.params;
+    // ? Find The Channel and populate the message and the sender:
+    const channel = await Channel.findById(channelId).populate({
+      path: "messages",
+      populate: {
+        path: "sender",
+        select: "_id email firstName lastName image color",
+      },
+    });
+    if (!channel) {
+      return next(errorHandler(404, "Channel not found"));
+    }
+    const messages = channel.messages;
+    //? send the response back to the client:
+    res.status(200).json({ messages });
+  } catch (error) {
+    console.log("Error getting channel messages", error.message);
+    next(error);
+  }
+};

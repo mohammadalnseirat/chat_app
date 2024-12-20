@@ -1,14 +1,22 @@
 import { axiosInstance } from "@/lib/api-client";
 import { useAppStore } from "@/store";
-import { GET_ALL_MESSAGES_ROUTE, HOST_URL } from "@/utils/constants";
+import {
+  GET_ALL_MESSAGES_ROUTE,
+  GET_CHANNEL_MESSAGES_ROUTE,
+  HOST_URL,
+} from "@/utils/constants";
 import moment from "moment";
 import { useRef, useEffect, useState } from "react";
 import { MdFolderZip } from "react-icons/md";
 import { IoArrowDownCircleSharp, IoCloseSharp } from "react-icons/io5";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getColor } from "@/lib/utils";
+import { toast } from "sonner";
 
 const MessageContainer = () => {
   const scrollRef = useRef();
   const {
+    userInfo,
     selectChatData,
     selectChatType,
     selectedChatMessages,
@@ -39,12 +47,32 @@ const MessageContainer = () => {
       }
     };
 
+    //? Finction To Get All Messages For Channel:
+    const getChannelMessages = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${GET_CHANNEL_MESSAGES_ROUTE}/${selectChatData._id}`,
+          { withCredentials: true }
+        );
+        if (response.status === 200 && response.data.messages) {
+          setSelectedChatMessages(response.data.messages);
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
+    };
+
     if (selectChatData._id) {
       if (selectChatType === "contact") {
         getMessages();
       }
+      if (selectChatType === "channel") {
+        getChannelMessages();
+      }
     }
   }, [selectChatData, selectChatType, setSelectedChatMessages]);
+
+  //? useEffect To Scroll Down Automatically:
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
@@ -65,6 +93,7 @@ const MessageContainer = () => {
             </div>
           )}
           {selectChatType === "contact" && renderDmMessage(message)}
+          {selectChatType === "channel" && renderDmChannelMessage(message)}
         </div>
       );
     });
@@ -102,6 +131,7 @@ const MessageContainer = () => {
     setFileDownloadProgress(0);
   };
 
+  //! Function To Render Message For User:
   const renderDmMessage = (message) => {
     return (
       <div
@@ -167,6 +197,103 @@ const MessageContainer = () => {
       </div>
     );
   };
+
+  //! Function To Render Message For Channel:
+  const renderDmChannelMessage = (message) => {
+    console.log(message);
+    return (
+      <div
+        className={`mt-5 ${
+          message.sender._id !== userInfo._id ? "text-left" : "text-right"
+        }`}
+      >
+        {message.messageType === "text" && (
+          <div
+            className={`${
+              message.sender._id === userInfo._id
+                ? "bg-green-500 text-gray-50  border-green-700"
+                : "bg-cyan-800 text-gray-50  border-gray-700"
+            } border p-4 my-1 ml-9 rounded inline-block max-w-[50%] break-words`}
+          >
+            {message.content}
+          </div>
+        )}
+        {message.messageType === "file" && (
+          <div
+            className={`${
+              message.sender._id === userInfo._id
+                ? "bg-gray-800 text-gray-50  border-gray-700"
+                : "bg-gray-800 text-gray-50  border-gray-600"
+            } border p-4 my-1 rounded inline-block max-w-[50%] break-words`}
+          >
+            {checkFileImage(message.fileUrl) ? (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowImage(true);
+                  setImageURL(message.fileUrl);
+                }}
+              >
+                <img
+                  src={`${HOST_URL}/${message.fileUrl}`}
+                  alt="image-file"
+                  height={300}
+                  width={300}
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-4 ">
+                <span className="text-3xl text-green-500 p-3 bg-gray-900 rounded-full">
+                  <MdFolderZip />
+                </span>
+                <span className="truncate">
+                  {message.fileUrl.split("/").pop()}
+                </span>
+                <span
+                  onClick={() => downloadFile(message.fileUrl)}
+                  className="text-2xl text-gray-50 p-3 bg-gray-900 rounded-full  transition-all duration-300 cursor-pointer group"
+                >
+                  <IoArrowDownCircleSharp className="group-hover:animate-bounce group-hover:text-red-600" />
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        {message.sender._id !== userInfo._id ? (
+          <div className="flex items-center justify-start gap-3">
+            <Avatar className="w-8 h-8 overflow-hidden rounded-full">
+              {message.sender.image && (
+                <AvatarImage
+                  src={`${HOST_URL}/${message.sender.image}`}
+                  alt="user-profile-image"
+                  className="w-full h-full object-cover bg-black rounded-full"
+                />
+              )}
+              <AvatarFallback
+                className={`uppercase w-8 h-8 flex items-center justify-center rounded-full text-lg ${getColor(
+                  message.sender.color
+                )}`}
+              >
+                {message.sender.firstName
+                  ? message.sender.firstName.split("").shift()
+                  : message.sender.email.split("").shift()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-gray-300">{`${message.sender.firstName} ${message.sender.lastName}`}</span>
+            <span className="text-xs text-gray-500 italic">
+              {moment(message.timestamp).format("LT")}
+            </span>
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500 mt-1 italic">
+            {moment(message.timestamp).format("LT")}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  //? Main Part Of The Code:
   return (
     <div className="overflow-y-auto  flex-1 scrollbar-hidden p-4 px-8 w-full md:w-[65vw] lg:w-[70vw] xl:w-[80vw]">
       {renderMessages()}

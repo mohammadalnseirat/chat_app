@@ -55,10 +55,17 @@ const MessageInput = () => {
         messageType: "text",
         fileUrl: undefined,
       });
-
-      //? clear the input field:
-      setMessage("");
+    } else if (selectChatType === "channel") {
+      socket.emit("send-channel-message", {
+        sender: userInfo._id,
+        content: message,
+        messageType: "text",
+        fileUrl: undefined,
+        channelId: selectChatData._id,
+      });
     }
+    //? clear the input field:
+    setMessage("");
   };
 
   //? handleAttachmentFile:
@@ -96,6 +103,14 @@ const MessageInput = () => {
               recipient: selectChatData._id,
               messageType: "file",
               fileUrl: response.data.filePath,
+            });
+          } else if (selectChatType === "channel") {
+            socket.emit("send-channel-message", {
+              sender: userInfo._id,
+              content: undefined,
+              messageType: "file",
+              fileUrl: response.data.filePath,
+              channelId: selectChatData._id,
             });
           }
         }
